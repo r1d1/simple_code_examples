@@ -1,0 +1,24 @@
+Le problème auquel tu es confronté est un problème [i]d'approximation de fonction[/i]: tu as ton espace mathématique d'entrée THETA (les angles en degrés, un espace de dimension 1 à valeurs dans le sous-espace des nombres réels R borné [-180.0,180.0]) et tu veux trouver la relation mathématique f avec ton espace mathématique de sortie C (les commandes de ton servomoteur envoyées par ton µC, en int), à partir d'un certain nombre de points.
+Pour l'instant, tu avais fait l'hypothèse (peut-être non-consciemment) que cette fonction f était linéaire. Donc que pour theta dans l'espace THETA (c'est-à-dire pour une valeur angulaire entre -180 et 180), la commande 'com' à appliquer vaut :
+
+com = a * theta + b
+
+C'est ce qui se passe quand tu fais 'map'.
+
+Mais ton constat, c'est que cette hypothèse n'est pas assez satisfaisante: quand tu appliques 'com' sur ton servo, tu ne vas pas à 'theta' mais à 'theta' + 'erreur'. La solution multimap consiste à passer d'un modèle linéaire à un modèle [i]linéaire par parties[/i]. Au lieu d'utiliser une seule droite, tu approches tes points avec une droite entre [-180, p0], une autre droite entre [p0, p1], etc.
+
+Deux questions : est-ce que ça vaut vraiment le coup de passer à un modèle plus complexe? Si oui, comment découper la fonction ?
+Il faut considérer le gain en précision opposé à la complexité de l'approximateur (le nombre de paramètres à trouver, ici les bornes des intervalles).
+
+Voici un petit exemple en considérant que les points de ton premier post sont les relations que tu veux obtenir. On va d'abord regarder la tête de ces points.
+
+<figure>
+
+À première vue, difficile de détecter une différence entre l'approximation linéaire (juste avec le min et le max et map, en bleu) et l'approximation linéaire par parties (en vert).
+Vu qu'on ne peut pas conclure sur l'intérêt d'utiliser une approximation linéaire par parties juste visuellement, on va calculer l'erreur que produit l'approximation linéaire simple.
+
+On commence par estimer, à partir des points extrêmes (min et max), les coefficients de la fonction linéaire correspondante. On calcule en fait deux approximations: en estimant b à partir du min ou du max.
+
+En utilisant ces coefficients,   
+
+Plus d'infos sur l'approximation linéaire d'un ensemble de points : http://grasland.script.univ-paris-diderot.fr/STAT98/stat98_7/stat98_7.htm
